@@ -1,0 +1,45 @@
+.example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+.example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+
+
+.page-links {
+    color: white;
+    font-weight: bolder
+}
+body {
+    min-height: 100vh
+}
+
+.text-gray {
+    color: #aaa
+}
+
+img {
+    height: 150px;
+    width: 150px
+}
+
+*{padding:0;margin:0;}
+
+body{
+	font-family:Verdana, Geneva, sans-serif;
+	font-size:18px;
+	background-color:#ffffff;
+}
+
+.floatbtn{
+	position:fixed;
+	width:60px;
+	height:60px;
+	bottom:40px;
+	right:40px;
+	background-color:#0C9;
+	color:#FFF;
+	border-radius:50px;
+	text-align:center;
+	box-shadow: 2px 2px 3px #999;
+}
+
+.my-float-btn{
+	margin-top:22px;
+}
