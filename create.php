@@ -5,7 +5,7 @@ if (isset($_POST["name"])) {
     ## create product
     $create = createProduct($mysqli,$_POST);
     if ($create) {
-        header("Location: http://localhost:8000");
+        header("Location: http://".$_SERVER['HTTP_HOST']);
         exit;
     }
 

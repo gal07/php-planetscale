@@ -16,6 +16,19 @@ function getallCategory($mysqli){
     return $mysqli->query($sql);
 }
 
+function deleteProduct($mysqli,$id){
+    $id_product = (int)$id;
+
+    $delete = $mysqli->prepare("DELETE FROM products WHERE id=?");
+    $delete->bind_param("s",$id_product);
+
+    if ($delete->execute()) {
+        return true;
+    }else{
+        return false;
+    }
+}
+
 function createProduct($mysqli,$post){
 
     $name = (string)$post["name"];

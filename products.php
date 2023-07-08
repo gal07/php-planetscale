@@ -1,3 +1,15 @@
+<?php
+
+    
+if (isset($_GET['delete'])) {
+    $delete = deleteProduct($mysqli,base64_decode($_GET['delete']));
+    if (!$delete) {
+        echo "Failed delete";
+    }
+}
+
+
+?>
 <div class="example-wrapper">
     <div>
         <div>
@@ -7,7 +19,7 @@
         <div>
             <div class="container py-5">
 
-            <a href="?create" class="floatbtn">
+            <a href="http://<?=$_SERVER['HTTP_HOST']?>/?create" class="floatbtn">
             <i class="fa fa-plus my-float-btn"></i>
             </a>
 
@@ -26,6 +38,7 @@
                                             <p class="font-italic text-muted mb-0 small"><?= $row['description']; ?></p>
                                             <?php $categoryName = getCategoryName($mysqli, $row['category_id']); ?>
                                             <p><small> Category: <b><?= $categoryName ?></b></small></p>
+                                            <a href="http://<?=$_SERVER['HTTP_HOST']?>/?delete=<?= base64_encode($row['id']) ?>" type="button" class="btn btn-danger">Delete</a>
                                         </div>
                                         <img src="<?= $row['image']; ?>" alt="Generic placeholder image" width="200"
                                              class="ml-lg-5 order-1 order-lg-2">
