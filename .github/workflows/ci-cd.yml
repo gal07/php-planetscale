@@ -8,6 +8,7 @@ env:
   SSH_HOST: ${{ secrets.HOSTING_HOST }}
   SSH_USER: ${{ secrets.HOSTING_USERNAME }}
   SSH_PORT: ${{ secrets.HOSTING_PORT || '22' }}
+  SSH_PASSWORD: ${{ secrets.HOSTING_PASSWORD }}
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
   REMOTE_REPO_DIR: 'php-planetscale/'  # Update this
 
@@ -17,16 +18,22 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Setup SSH
+
+    - name: Install sshpass (for password auth)
       run: |
-        mkdir -p ~/.ssh/
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
+        sudo apt-get update
+        sudo apt-get install -y sshpass
+
+    - name: Add server to known hosts
+      run: |
+        mkdir -p ~/.ssh
         ssh-keyscan -p ${{ env.SSH_PORT }} ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
-    
-    - name: Pull latest changes
+
+    - name: Pull latest changes using SSH password
       run: |
-        ssh -i ~/.ssh/id_rsa -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
+        sshpass -p "${{ env.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
           "cd ${{ env.REMOTE_REPO_DIR }} && \
-          git pull origin main"
+          git fetch && \
+          git reset --hard origin/main && \
+          git clean -fd && \
+          git log -1 --oneline"
