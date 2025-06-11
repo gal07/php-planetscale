@@ -11,14 +11,14 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-      
+
     - name: Deploy via SSH and Git Pull
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOSTING_HOST }}
         username: ${{ secrets.HOSTING_USERNAME }}
         password: ${{ secrets.HOSTING_PASSWORD }}
-        port: ${{ secrets.HOSTING_PORT || 22 }}
+        port: ${{ secrets.HOSTING_PORT || 64000 }}
         script: |
           cd /php-planetscale
           git config --global user.name "GitHub Actions"
