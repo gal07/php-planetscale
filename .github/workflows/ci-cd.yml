@@ -16,19 +16,17 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Install SSH key
-      uses: webfactory/ssh-agent@v0.7.0
-      with:
-        ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
+    - uses: actions/checkout@v4
     
-    - name: Add server to known hosts
+    - name: Setup SSH
       run: |
-        mkdir -p ~/.ssh
-        ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
+        mkdir -p ~/.ssh/
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -p ${{ env.SSH_PORT }} ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
     
     - name: Pull latest changes
       run: |
-        ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
+        ssh -i ~/.ssh/id_rsa -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
           "cd ${{ env.REMOTE_REPO_DIR }} && \
-          git pull origin main && \
-          git status"
+          git pull origin main"
