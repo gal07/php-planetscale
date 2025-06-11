@@ -1,27 +1,34 @@
-name: Deploy to Hosting
+name: Update Repository via SSH
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]  # Trigger on pushes to main branch
+
+env:
+  SSH_HOST: ${{ secrets.HOSTING_HOST }}
+  SSH_USER: ${{ secrets.HOSTING_USERNAME }}
+  SSH_PORT: ${{ secrets.HOSTING_PORT || '22' }}
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  REMOTE_REPO_DIR: 'php-planetscale/'  # Update this
 
 jobs:
-  deploy:
+  update-repo:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Deploy via SSH and Git Pull
-      uses: appleboy/ssh-action@master
+    - name: Install SSH key
+      uses: webfactory/ssh-agent@v0.7.0
       with:
-        host: ${{ secrets.HOSTING_HOST }}
-        username: ${{ secrets.HOSTING_USERNAME }}
-        password: ${{ secrets.HOSTING_PASSWORD }}
-        port: ${{ secrets.HOSTING_PORT || 64000 }}
-        script: |
-          cd /php-planetscale
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git pull origin main
-          
+        ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
+    
+    - name: Add server to known hosts
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
+    
+    - name: Pull latest changes
+      run: |
+        ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
+          "cd ${{ env.REMOTE_REPO_DIR }} && \
+          git pull origin main && \
+          git status"
